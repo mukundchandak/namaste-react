@@ -18,3 +18,25 @@
 - Error Handling
 - HTTPS (gives a way to host on https)
 - Tree Shaking - removes unused code
+
+
+Two types of Export/Import
+
+- Default export/import
+
+export default Component;
+import Component from 'path';
+
+- Named Export/Import
+
+export const Component;
+import {Component} from 'path';
+
+
+...
+# React Hooks
+( Normal JS utility functions)
+- useState()
+- useEffect()
+...
+
