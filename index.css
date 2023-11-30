@@ -55,3 +55,19 @@
 .filterBtn {
   margin: 10px 0;
 }
+
+.shimmer-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.shimmer-card {
+  width: 170px;
+  height: 300px;
+  background-color: #f0f0f0;
+  margin: 20px;
+}
+
+.filter {
+  display: flex;
+}
