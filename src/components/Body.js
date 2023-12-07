@@ -1,6 +1,7 @@
 // import RestaurantCard from "./RestaurantCard";
 import { useState, useEffect, lazy, Suspense } from "react";
 import Shimmer from "./Shimmer";
+import { Link } from "react-router-dom";
 
 const Body = () => {
   // const restaurants =
@@ -80,10 +81,19 @@ const Body = () => {
 
   document.addEventListener("scrollend", updateFetchData());
 
+  document.getElementById("main-body")?.addEventListener("scroll", (event) => {
+    const { scrollHeight, scrollTop, clientHeight } = event.target;
+    alert("scrolled");
+    updateFetchData();
+    if (Math.abs(scrollHeight - clientHeight - scrollTop) < 1) {
+      console.log("scrolled");
+    }
+  });
+
   const fetchData = async () => {
     const data = await fetch(
       "https://www.swiggy.com/dapi/restaurants/list/v5?lat=12.9715987&lng=77.5945627&is-seo-homepage-enabled=true&page_type=DESKTOP_WEB_LISTING"
-    );
+    ).catch((err) => console.log(err));
 
     const json = await data.json();
     console.log(json);
@@ -104,7 +114,7 @@ const Body = () => {
   return listOfRestaurants?.length === 0 ? (
     <Shimmer />
   ) : (
-    <div className="body">
+    <div className="body" id="main-body">
       <div className="filter">
         <div className="search">
           <input
@@ -118,12 +128,14 @@ const Body = () => {
             className="search-btn"
             onClick={() => {
               console.log(searchText);
-              const filterList = listOfRestaurants.filter((res) => {
-                console.log(res.info.name);
-                return res.info.name
-                  .toLowerCase()
-                  .includes(searchText.toLowerCase());
-              });
+              const filterList =
+                Array.isArray(listOfRestaurants) &&
+                listOfRestaurants.filter((res) => {
+                  console.log(res.info.name);
+                  return res.info.name
+                    .toLowerCase()
+                    .includes(searchText.toLowerCase());
+                });
               console.log(filterList);
               setFilteredSearch(filterList);
             }}
@@ -134,10 +146,12 @@ const Body = () => {
         <button
           className="filterBtn"
           onClick={() => {
-            const filteredList = listOfRestaurants.filter((res, i) => {
-              console.log(res);
-              return res?.info?.avgRating > 4;
-            });
+            const filteredList =
+              Array.isArray(listOfRestaurants) &&
+              listOfRestaurants.filter((res, i) => {
+                console.log(res);
+                return res?.info?.avgRating > 4;
+              });
             console.log(filteredList);
             setFilteredSearch(filteredList);
           }}
@@ -145,14 +159,17 @@ const Body = () => {
           Top Rated Restaurants
         </button>
       </div>
-      <div className="res-container" onScroll={() => updateFetchData()}>
-        {filteredSearch.length &&
+      <div className="res-container">
+        {Array.isArray(filteredSearch) &&
+          filteredSearch.length &&
           filteredSearch?.map((restaurant, i) => (
             <Suspense fallback={<Shimmer />}>
-              <RestaurantCard
+              <Link
+                to={"/restaurants/" + restaurant.info.id}
                 key={restaurant["info"]["id"]}
-                restaurant={restaurant["info"]}
-              />
+              >
+                <RestaurantCard restaurant={restaurant["info"]} />
+              </Link>
               <div id="more-data"></div>
             </Suspense>
           ))}
